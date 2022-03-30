@@ -119,12 +119,20 @@ namespace ZamanTutucu.WinFormApp
             foreach (string file in files)
             {
                 var worklogs = Worklog.DosyadanOku(file);
-                workLogList.AddRange(worklogs);
+                if (worklogs != null)
+                    workLogList.AddRange(worklogs);
             }
 
-            Worklog.DosyayaYaz(workLogList, "tumLoglar.json");
+            if (workLogList == null || workLogList.Count == 0)
+            {
+                MessageBox.Show("Gösterilecek herhangi log bulunamadı!");
+            }
+            else
+            {
+                Worklog.DosyayaYaz(workLogList, "tumLoglar.json");
 
-            System.Diagnostics.Process.Start("notepad++.exe", Worklog.TamDosyaAdi("tumLoglar.json"));
+                System.Diagnostics.Process.Start("notepad++.exe", Worklog.TamDosyaAdi("tumLoglar.json"));
+            }
         }
     }
 
@@ -135,7 +143,7 @@ namespace ZamanTutucu.WinFormApp
 
     public class Worklog
     {
-        
+
         public Worklog(string jiraNo, string aciklama, string sure)
         {
             Tarih = DateTime.Now;
