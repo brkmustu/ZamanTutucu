@@ -192,7 +192,11 @@ namespace ZamanTutucu.WinFormApp
             var currentWorkLogsText = File.ReadAllText(_dosyaAdi);
             if (string.IsNullOrEmpty(currentWorkLogsText)) return null;
             var logs = JsonConvert.DeserializeObject<Dictionary<string, List<Worklog>>>(currentWorkLogsText);
-            return logs[EforGunAdi()];
+            if (logs.TryGetValue(EforGunAdi(), out List<Worklog> currentLogs))
+            {
+                return currentLogs;
+            }
+            return null;
         }
     }
 
