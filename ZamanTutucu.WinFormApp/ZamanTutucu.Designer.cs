@@ -36,6 +36,9 @@
             this.arttir = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.JiraNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Aciklama = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Sure = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ekle = new System.Windows.Forms.Button();
             this.txt_jirano = new System.Windows.Forms.TextBox();
             this.rtxt_aciklama = new System.Windows.Forms.RichTextBox();
@@ -43,9 +46,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btn_ayarlar = new System.Windows.Forms.Button();
             this.btn_tumloglar = new System.Windows.Forms.Button();
-            this.JiraNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Aciklama = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Sure = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -121,8 +121,29 @@
             this.dataGridView1.Location = new System.Drawing.Point(12, 124);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(490, 518);
+            this.dataGridView1.Size = new System.Drawing.Size(490, 205);
             this.dataGridView1.TabIndex = 5;
+            // 
+            // JiraNo
+            // 
+            this.JiraNo.HeaderText = "JiraNo";
+            this.JiraNo.Name = "JiraNo";
+            this.JiraNo.ReadOnly = true;
+            this.JiraNo.Width = 75;
+            // 
+            // Aciklama
+            // 
+            this.Aciklama.HeaderText = "Açıklama";
+            this.Aciklama.Name = "Aciklama";
+            this.Aciklama.ReadOnly = true;
+            this.Aciklama.Width = 270;
+            // 
+            // Sure
+            // 
+            this.Sure.HeaderText = "Süre";
+            this.Sure.Name = "Sure";
+            this.Sure.ReadOnly = true;
+            this.Sure.Width = 75;
             // 
             // ekle
             // 
@@ -198,32 +219,11 @@
             this.btn_tumloglar.UseVisualStyleBackColor = false;
             this.btn_tumloglar.Click += new System.EventHandler(this.btn_tumloglar_Click);
             // 
-            // JiraNo
-            // 
-            this.JiraNo.HeaderText = "JiraNo";
-            this.JiraNo.Name = "JiraNo";
-            this.JiraNo.ReadOnly = true;
-            this.JiraNo.Width = 75;
-            // 
-            // Aciklama
-            // 
-            this.Aciklama.HeaderText = "Açıklama";
-            this.Aciklama.Name = "Aciklama";
-            this.Aciklama.ReadOnly = true;
-            this.Aciklama.Width = 270;
-            // 
-            // Sure
-            // 
-            this.Sure.HeaderText = "Süre";
-            this.Sure.Name = "Sure";
-            this.Sure.ReadOnly = true;
-            this.Sure.Width = 75;
-            // 
             // ZamanTutucu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(514, 654);
+            this.ClientSize = new System.Drawing.Size(514, 340);
             this.Controls.Add(this.btn_tumloglar);
             this.Controls.Add(this.btn_ayarlar);
             this.Controls.Add(this.label2);

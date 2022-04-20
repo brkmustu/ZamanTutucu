@@ -13,6 +13,7 @@ namespace ZamanTutucu.WinFormApp
         private DateTime sayac_time = new DateTime();
         public ZamanTutucu()
         {
+            TopMost = true;
             InitializeComponent();
             timer1.Interval = 1000;
             sayac_lbl.Text = sayac_time.ToString("HH:mm:ss");
@@ -25,9 +26,12 @@ namespace ZamanTutucu.WinFormApp
             var mevcutLoglar = Worklog.DosyadanOku();
             if (mevcutLoglar != null && mevcutLoglar.Count > 0)
             {
-                foreach (var item in mevcutLoglar)
+                if (mevcutLoglar.TryGetValue(Worklog.EforGunAdi(), out List<Worklog> dayLogs))
                 {
-                    dataGridView1.Rows.Add(item.JiraNo, item.Aciklama, item.Sure);
+                    foreach (var item in dayLogs)
+                    {
+                        dataGridView1.Rows.Add(item.JiraNo, item.Aciklama, item.Sure);
+                    }
                 }
             }
         }
@@ -87,16 +91,19 @@ namespace ZamanTutucu.WinFormApp
                 worklogs.Add(new Worklog(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString()));
             }
 
-            var writingLogs = new List<Worklog>();
+            var writingLogs = new Dictionary<string, List<Worklog>>();
 
             var dosyadakiLoglar = Worklog.DosyadanOku();
 
             if (dosyadakiLoglar != null && dosyadakiLoglar.Count > 0)
             {
-                writingLogs.AddRange(dosyadakiLoglar);
+                foreach (var worklogsInDay in dosyadakiLoglar)
+                {
+                    writingLogs.Add(worklogsInDay.Key, worklogsInDay.Value);
+                }
             }
 
-            writingLogs.AddRange(worklogs);
+            writingLogs.Add(Worklog.EforGunAdi(), worklogs);
             Worklog.DosyayaYaz(writingLogs);
         }
 
@@ -114,13 +121,21 @@ namespace ZamanTutucu.WinFormApp
 
             string[] files = Directory.GetFiles(worklogDosyaYolu);
 
-            var workLogList = new List<Worklog>();
+            var workLogList = new Dictionary<string, List<Worklog>>();
 
             foreach (string file in files)
             {
+                if (file.EndsWith("tumLoglar.json"))
+                    continue;
+
                 var worklogs = Worklog.DosyadanOku(file);
-                if (worklogs != null)
-                    workLogList.AddRange(worklogs);
+                if (worklogs != null && worklogs.Count > 0)
+                {
+                    foreach (var worklogsInDay in worklogs)
+                    {
+                        workLogList.Add(worklogsInDay.Key, worklogsInDay.Value);
+                    }
+                }
             }
 
             if (workLogList == null || workLogList.Count == 0)
@@ -160,9 +175,9 @@ namespace ZamanTutucu.WinFormApp
         {
             return DateTime.Now.ToString("yyyy-MMMM", Yardimci.CultureInfo);
         }
-        public static string EforGunAdi()
+        public static string EforGunAdi(DateTime? value = null)
         {
-            return DateTime.Now.ToString("yyyy-MM-dd");
+            return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd");
         }
 
         public static void DosyayaYaz(List<Worklog> worklogs, string dosyaAdi = "")
@@ -174,6 +189,19 @@ namespace ZamanTutucu.WinFormApp
                 {
                     { EforGunAdi(), worklogs }
                 }, Formatting.Indented));
+            }
+        }
+        public static void DosyayaYaz(Dictionary<string, List<Worklog>> worklogs, string dosyaAdi = "")
+        {
+            var toWriteList = new Dictionary<string, List<Worklog>>();
+            foreach (var worklogsInDay in worklogs)
+            {
+                var currentWorklogs = worklogsInDay.Value.Distinct(new WorklogEqualityComparer()).ToList();
+                toWriteList.Add(worklogsInDay.Key, currentWorklogs);
+            }
+            using (StreamWriter writer = new StreamWriter(TamDosyaAdi(dosyaAdi), false))
+            {
+                writer.Write(JsonConvert.SerializeObject(toWriteList, Formatting.Indented));
             }
         }
 
@@ -193,18 +221,22 @@ namespace ZamanTutucu.WinFormApp
             return Path.Combine(worklogsPath, string.IsNullOrEmpty(dosyaAdi) ? DosyaAdi() + ".json" : dosyaAdi);
         }
 
-        public static List<Worklog> DosyadanOku(string dosyaAdi = "")
+        public static Dictionary<string, List<Worklog>> DosyadanOku(string dosyaAdi = "")
         {
             var _dosyaAdi = TamDosyaAdi(dosyaAdi);
             if (!File.Exists(_dosyaAdi)) return null;
             var currentWorkLogsText = File.ReadAllText(_dosyaAdi);
             if (string.IsNullOrEmpty(currentWorkLogsText)) return null;
-            var logs = JsonConvert.DeserializeObject<Dictionary<string, List<Worklog>>>(currentWorkLogsText);
-            if (logs.TryGetValue(EforGunAdi(), out List<Worklog> currentLogs))
-            {
-                return currentLogs;
-            }
-            return null;
+            return JsonConvert.DeserializeObject<Dictionary<string, List<Worklog>>>(currentWorkLogsText);
+            //var currentLogs = new List<Worklog>();
+            //for (int i = 1; i <= DateTime.Now.Day; i++)
+            //{
+            //    if (logs.TryGetValue(EforGunAdi(new DateTime(DateTime.Now.Year, DateTime.Now.Month, i)), out List<Worklog> dayLogs))
+            //    {
+            //        currentLogs.AddRange(dayLogs);
+            //    }
+            //}
+            //return currentLogs;
         }
     }
 
