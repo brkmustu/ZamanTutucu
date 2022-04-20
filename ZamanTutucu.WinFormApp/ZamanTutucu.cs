@@ -99,6 +99,9 @@ namespace ZamanTutucu.WinFormApp
             {
                 foreach (var worklogsInDay in dosyadakiLoglar)
                 {
+                    if (worklogsInDay.Key == Worklog.EforGunAdi())
+                        continue;
+
                     writingLogs.Add(worklogsInDay.Key, worklogsInDay.Value);
                 }
             }
@@ -175,6 +178,11 @@ namespace ZamanTutucu.WinFormApp
         {
             return DateTime.Now.ToString("yyyy-MMMM", Yardimci.CultureInfo);
         }
+        /// <summary>
+        /// parametre boş gönderilirse bugünün string değeri döndürülür
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string EforGunAdi(DateTime? value = null)
         {
             return value.HasValue ? value.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd");
